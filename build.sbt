@@ -13,6 +13,7 @@ val akkaDesp = Seq(
   "com.typesafe.akka" %% "akka-remote" % akkaV,
   "com.typesafe.akka" %% "akka-http" % akkaHttpV,
   "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpV,
+  "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpV,
   "com.typesafe.akka" %% "akka-stream" % akkaV,
   "com.typesafe.akka" %% "akka-cluster-sharding" % akkaV,
   "com.typesafe.akka" %% "akka-distributed-data" % akkaV,
