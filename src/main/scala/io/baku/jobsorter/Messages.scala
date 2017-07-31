@@ -5,6 +5,8 @@ import spray.json._
 
 object Messages {
 
+  case class PackIt(num: Int)
+
   case class Packed(id: String)
 
   object Packed extends SprayJsonSupport with DefaultJsonProtocol {
