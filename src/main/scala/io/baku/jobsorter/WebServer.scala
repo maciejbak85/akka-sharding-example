@@ -1,39 +1,44 @@
 package io.baku.jobsorter
 
-import akka.actor.ActorSystem
+import akka.actor.{ActorRef, ActorSystem}
+import akka.cluster.sharding.{ClusterSharding, ClusterShardingSettings}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
-import akka.stream.ActorMaterializer
 import akka.pattern.ask
-import akka.routing.FromConfig
-import io.baku.jobsorter.Messages.{PackIt, Packed}
+import akka.stream.ActorMaterializer
+import com.typesafe.config.ConfigFactory
 
-import scala.io.StdIn
 import scala.concurrent.duration._
 
 object WebServer {
   def main(args: Array[String]) {
 
-    implicit val system = ActorSystem("my-system")
+    implicit val system = ActorSystem("zyztem")
     implicit val materializer = ActorMaterializer()
     implicit val executionContext = system.dispatcher
+    val config = ConfigFactory.load()
 
-    val packagingActor = system.actorOf(FromConfig.props(PackagingActor.props), "packBoss")
+    //val packagingActor = system.actorOf(FromConfig.props(PackagingActor.props), "packBoss")
+
+    val counterRegion: ActorRef = ClusterSharding(system).start(
+      typeName = PackagingActor.shardName,
+      entityProps = PackagingActor.props,
+      settings = ClusterShardingSettings(system),
+      extractEntityId = PackagingActor.extractEntityId,
+      extractShardId = PackagingActor.extractShardId)
 
     val route =
       path("pack" / IntNumber) { (workId) =>
         get {
-          val resp = packagingActor.ask(PackIt(workId))(5 seconds).mapTo[Packed]
+          val resp = counterRegion.ask(PackIt(workId))(5 seconds).mapTo[Packed]
           complete(resp)
         }
       }
 
-    val bindingFuture = Http().bindAndHandle(route, "localhost", 8080)
+    val httpPort = config.getInt("http.port")
+    Http().bindAndHandle(route, "localhost", httpPort)
 
-    println(s"Server online at http://localhost:8080/\nPress RETURN to stop...")
-    StdIn.readLine() // let it run until user presses return
-    bindingFuture
-      .flatMap(_.unbind()) // trigger unbinding from the port
-      .onComplete(_ => system.terminate()) // and shutdown when done
+    println(s"Server online at http://localhost:$httpPort/\n")
+
   }
 }

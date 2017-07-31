@@ -1,6 +1,6 @@
-name := "akkaShardingExample"
+name := "akkashardingexample"
 
-version := "1.0"
+version := "0.1"
 
 scalaVersion := "2.12.3"
 
@@ -12,12 +12,8 @@ val akkaDesp = Seq(
   "com.typesafe.akka" %% "akka-cluster" % akkaV,
   "com.typesafe.akka" %% "akka-remote" % akkaV,
   "com.typesafe.akka" %% "akka-http" % akkaHttpV,
-  "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpV,
   "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpV,
-  "com.typesafe.akka" %% "akka-stream" % akkaV,
   "com.typesafe.akka" %% "akka-cluster-sharding" % akkaV,
-  "com.typesafe.akka" %% "akka-distributed-data" % akkaV,
-  "com.typesafe.akka" %% "akka-persistence" % akkaV,
   "com.typesafe.akka" % "akka-cluster-metrics_2.12" % akkaV,
   "com.typesafe.akka" % "akka-slf4j_2.12" % akkaV,
   "com.typesafe.akka" %% "akka-cluster-tools" % akkaV
@@ -39,7 +35,7 @@ dockerExposedPorts in Docker := Seq(1600)
 
 dockerEntrypoint in Docker := Seq("sh", "-c", "CLUSTER_IP=`/sbin/ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1 }'` bin/clustering $*")
 
-dockerRepository := Some("akkaclusterbaku")
+dockerRepository := Some("shardexample")
 
 dockerBaseImage := "java"
 enablePlugins(JavaAppPackaging)

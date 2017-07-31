@@ -1,7 +1,7 @@
 version: '2'
 services:
   seed:
-    image: akkaclusterbaku/akkacluster:0.1.3
+    image: shardexample/akkashardingexample:0.1
     ports:
       - '1600:1600'
       - '9000:9000'
@@ -11,7 +11,7 @@ services:
       SEED_PORT_1600_TCP_ADDR: seed
       CLUSTER_ROLE: seed
   w1:
-    image: akkaclusterbaku/akkacluster:0.1.3
+    image: shardexample/akkashardingexample:0.1
     ports:
       - '1601:1601'
       - '9001:9000'
@@ -20,23 +20,3 @@ services:
       CLUSTER_IP: w1
       SEED_PORT_1600_TCP_ADDR: seed
       CLUSTER_ROLE: worker
-  w2:
-      image: akkaclusterbaku/akkacluster:0.1.3
-      ports:
-        - '1602:1602'
-        - '9002:9000'
-      environment:
-        CLUSTER_PORT: 1602
-        CLUSTER_IP: w2
-        SEED_PORT_1600_TCP_ADDR: seed
-        CLUSTER_ROLE: worker
-  wp:
-    image: akkaclusterbaku/akkacluster:0.1.3
-    ports:
-      - '1603:1603'
-      - '9003:9000'
-    environment:
-      CLUSTER_PORT: 1603
-      CLUSTER_IP: wp
-      SEED_PORT_1600_TCP_ADDR: seed
-      CLUSTER_ROLE: work_producer
