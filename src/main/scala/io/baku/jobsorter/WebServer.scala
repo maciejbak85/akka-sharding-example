@@ -4,21 +4,27 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
+import akka.pattern.ask
+import akka.routing.FromConfig
+import io.baku.jobsorter.Messages.{PackIt, Packed}
 
 import scala.io.StdIn
+import scala.concurrent.duration._
 
 object WebServer {
   def main(args: Array[String]) {
 
     implicit val system = ActorSystem("my-system")
     implicit val materializer = ActorMaterializer()
-    // needed for the future flatMap/onComplete in the end
     implicit val executionContext = system.dispatcher
+
+    val packagingActor = system.actorOf(FromConfig.props(PackagingActor.props), "packBoss")
 
     val route =
       path("pack" / IntNumber) { (workId) =>
         get {
-          complete(Packer.packIt(workId))
+          val resp = packagingActor.ask(PackIt(workId))(5 seconds).mapTo[Packed]
+          complete(resp)
         }
       }
 
